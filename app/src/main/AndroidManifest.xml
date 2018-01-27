@@ -20,7 +20,6 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -31,9 +30,9 @@
 
         </activity>
 
-        <service android:name="applications.AppIntentService" />
-        <service android:name="recogniton_service.ForeGroundRecognition" />
 
+        <service android:name="services.TTS" />
+        <service android:name="services.STT" />
     </application>
 
 </manifest>

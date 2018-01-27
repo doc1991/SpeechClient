@@ -3,8 +3,6 @@ package utils;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -28,7 +26,6 @@ public class AppPackagesUtils {
         String matched;
         matched = SearchStringHelper.getBestStringMatch(pkglist,query).keySet().iterator().next();
         Log.d(TAG, "Matched app package is: " + matched);
-
         if (matched.equals(NO_MATCH)) {
             return NO_MATCH;
         } else {
@@ -45,13 +42,6 @@ public class AppPackagesUtils {
         }
         return list;
     }
-    public static boolean isNetworkAvailable(Context context) {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
 }
 
 

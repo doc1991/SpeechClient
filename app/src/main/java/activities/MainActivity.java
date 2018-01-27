@@ -15,15 +15,16 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,9 +34,9 @@ import com.example.bill.Activities.R;
 
 import activities.permission.PermissionActivity;
 import activities.settings.SettingsActivity;
-import recogniton_service.ForeGroundRecognition;
-import recogniton_service.SpeechService;
-import utils.AppPackagesUtils;
+import services.STT;
+import services.TTS;
+import services.WitResponse;
 
 /**
  * Created by bill on 11/20/17.
@@ -52,39 +53,8 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
     private ProgressBar progressBar;
     private ProgressBar WaitAction;
     private Toolbar toolbar;
-    private ForeGroundRecognition speechService;
-    private Intent speechintent;
     private boolean exit, assistantBound;
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
 
-            String result = intent.getStringExtra("result");
-
-            if (!result.equals("")) {
-                response.setText(result);
-            } else {
-                response.setText("");
-            }
-
-
-
-        }
-    };
-    private ServiceConnection speechConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            ForeGroundRecognition.AssistantBinder binder = (ForeGroundRecognition.AssistantBinder) service;
-            speechService = binder.getService();
-            assistantBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-
-            assistantBound = false;
-        }
-    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,16 +66,51 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
 
     }
 
+    private void Init() {
+
+        setButtons();
+        setProgress();
+        setText();
+        setToolbar();
+        setDrawerLayout();
+        setNavigation();
+
+    }
+
+    //Activity Lifecycle
     @Override
     protected void onStart() {
         super.onStart();
-        if (speechService == null) {
-            speechintent = new Intent(MainActivity.this, ForeGroundRecognition.class);
-            speechintent.setAction("com.marothiatechs.foregroundservice.action.startforeground");
-            startService(speechintent);
-            bindService(speechintent, speechConnection, Context.BIND_AUTO_CREATE);
-        }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter iff= new IntentFilter(WitResponse.BROADCAST_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(WitBrodcastReceiver,iff);
+
+    }
+
+    //Broadcast Receivers Endpoints
+    private BroadcastReceiver WitBrodcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, intent.getExtras().toString());
+        }
+    };
+
+    //Button Endpoints
+    public void onBtnClick(View view){
+        Log.d(TAG,"Click!");
+        Intent in = new Intent(getApplicationContext(), TTS.class);
+        in.putExtra(TTS.MESSAGE_STRING,"Πες μου εντολή");
+        in.putExtra(TTS.HAS_RECOGNITION_EXTRA,true);
+        in.putExtra(TTS.HAS_WIT_EXTRA,true);
+        startService(in);
+
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -175,28 +180,16 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
 
         if (id == R.id.nav_action) {
 
-
         } else if (id == R.id.nav_about) {
 
         } else if (id == R.id.nav_manage) {
             startActivity(new Intent(this, SettingsActivity.class));
-
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    private void Init() {
-
-        setButtons();
-        setProgress();
-        setText();
-        setToolbar();
-        setDrawerLayout();
-        setNavigation();
-        record();
-    }
 
     //set gui functions
     private void setNavigation() {
@@ -218,30 +211,12 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
     }
 
     private void setButtons() {
-        btnIput = findViewById(R.id.toggleButton2);
     }
 
     private void setProgress() {
-        progressBar = findViewById(R.id.progressBar3);
-        WaitAction = findViewById(R.id.progressBar4);
     }
 
     private void setText() {
-        response = findViewById(R.id.textView2);
-        response.setText("");
-    }
-
-    private void record() {
-
-        btnIput.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                startRecord(b);
-
-            }
-        });
-
-
     }
 
     private void clearProgressBar() {
@@ -264,47 +239,14 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
         WaitAction.setVisibility(View.VISIBLE);
     }
 
-    private void startRecord(boolean b) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean btn = sharedPref.getBoolean(getResources().getString(R.string.switch_continuous), true);
-        speechService.setContinuous(btn);
-       if (AppPackagesUtils.isNetworkAvailable(this)) {
-           if (b) {
-               speechService.StartInteract();
-               showProgressBar();
-           } else {
-               clearProgressBar();
-               speechService.StopSrecognition();
-           }
-       }else {
-           Toast.makeText(this,getResources().getString(R.string.network_error),Toast.LENGTH_LONG).show();
-       }
-
-    }
-
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(speechConnection);
-        if (!exit) {
-            stopService(speechintent);
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(broadcastReceiver, new IntentFilter(SpeechService.BroadcastAction));
-
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(broadcastReceiver);
     }
 
     @Override

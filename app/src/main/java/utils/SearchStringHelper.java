@@ -31,7 +31,6 @@ public class SearchStringHelper {
         double max_match = 0.0;
 
         HashMap<String, Double> result = new HashMap<>();
-        HashMap<String, Double> finalResult = new HashMap<>();
 
         for (String elem : list) {
 
@@ -61,21 +60,21 @@ public class SearchStringHelper {
         if (result.size() > 1) {
 
             for (Map.Entry<String, Double> entry : result.entrySet()) {
-                if (entry.getValue() > 0.9)
-                    finalResult.put(entry.getKey(), entry.getValue());
-
+                if (entry.getValue() > 0.9) {
+                    result.put(entry.getKey(), entry.getValue());
+                }
             }
         } else {
             if (max_match < 0.75) {
-                finalResult.put("no_match", max_match);
+                result.put("no_match", max_match);
 
             } else {
-                finalResult.put(bestmatch, max_match);
+                result.put(bestmatch, max_match);
 
             }
         }
 
-        return finalResult;
+        return result;
     }
 
     public static double getContactSimilairty(String name, String query) {
@@ -144,6 +143,8 @@ public class SearchStringHelper {
 
         return map;
     }
+
+    private static 
 
     private static String greeknorm(String word) {
         String norm = word.toLowerCase();
