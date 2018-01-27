@@ -38,7 +38,7 @@
     <string name="no_success_open">Η εφαρμογή δεν είναι εγκατεστημένη</string>
     <!-- Strings related to Settings -->
 
-    <!-- Example General settings -->
+    <Witresponsemple General settings -->
     <string name="settings_title">Ρυθμίσεις</string>
     <string name="continuous_setting"> Συνεχής αναγνώριση</string>
     <string name="switch_continuous">switch_continuous</string>
