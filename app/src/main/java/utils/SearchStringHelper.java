@@ -109,43 +109,6 @@ public class SearchStringHelper {
         return buffer.toString();
     }
 
-
-    public static HashMap<String, String> JsontoHash(String result) {
-        HashMap<String, String> map = new HashMap<>();
-        JSONObject reader;
-        try {
-            reader = new JSONObject(result);
-            Log.i(TAG, "response from wit as json is " + reader.toString());
-
-            JSONObject elements = reader.getJSONObject("entities");
-            Log.i(TAG, " json elements is " + elements);
-
-            if (elements.has("Action")) {
-                JSONArray action = elements.getJSONArray("Action");
-                map.put("Action", action.getJSONObject(0).getString("value"));
-                Double confid = action.getJSONObject(0).getDouble("confidence");
-                map.put("Action_conf", confid.toString());
-            } else {
-                map.put("Action", null);
-            }
-            if (elements.has("App_data")) {
-                JSONArray App_data = elements.getJSONArray("App_data");
-                map.put("App_data", App_data.getJSONObject(0).getString("value"));
-            } else {
-                map.put("App_data", null);
-            }
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-
-        }
-
-        return map;
-    }
-
-    private static 
-
     private static String greeknorm(String word) {
         String norm = word.toLowerCase();
         StrBuilder wordbld = new StrBuilder(norm);

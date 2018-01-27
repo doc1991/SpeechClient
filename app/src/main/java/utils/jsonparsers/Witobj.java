@@ -4,7 +4,7 @@ package utils.jsonparsers;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Witresponse {
+public class Witobj {
 
     @SerializedName("_text")
     @Expose
