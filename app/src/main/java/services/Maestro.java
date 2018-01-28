@@ -9,6 +9,8 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import utils.Constants;
+
 public class Maestro extends Service {
 
     public String TAG = "Maestro Service";
@@ -26,8 +28,8 @@ public class Maestro extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        IntentFilter iff= new IntentFilter(WitResponse.BROADCAST_ACTION);
-        LocalBroadcastManager.getInstance(this).registerReceiver(WitBrodcastReceiver,iff);
+        IntentFilter iff= new IntentFilter(Constants.MaestroComm);
+        LocalBroadcastManager.getInstance(this).registerReceiver(MaestroReceiver,iff);
     }
 
     @Override
@@ -37,10 +39,17 @@ public class Maestro extends Service {
     }
 
     //Broadcast Receivers Endpoints
-    private BroadcastReceiver WitBrodcastReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver MaestroReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, intent.getExtras().toString());
+            intent.getSerializableExtra("WitOBJ");
+
+            CommandReceived();
+
         }
     };
+
+    private void CommandReceived(){
+
+    }
 }

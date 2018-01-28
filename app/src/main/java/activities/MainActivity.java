@@ -55,7 +55,8 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
     private ProgressBar WaitAction;
     private Toolbar toolbar;
     private boolean exit, assistantBound;
-
+    TTS mService;
+    boolean mBound = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,28 +83,29 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
     @Override
     protected void onStart() {
         super.onStart();
+
+        //Bind to Services
+        Intent intent = new Intent(this,TTS.class);
+        bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        //Start MAESTRO Service for multiplexing the applications
-        Intent in = new Intent(getApplicationContext(), Maestro.class);
-        startService(in);
     }
 
 
 
     //Button Endpoints
     public void onBtnClick(View view){
-        Log.d(TAG,"Click!");
-        Intent in = new Intent(getApplicationContext(), TTS.class);
-        in.putExtra(TTS.MESSAGE_STRING,"Πες μου εντολή");
-        in.putExtra(TTS.HAS_RECOGNITION_EXTRA,true);
-        in.putExtra(TTS.HAS_WIT_EXTRA,true);
-        startService(in);
+        if (mBound){
+            Intent in = new Intent(getApplicationContext(), TTS.class);
+            in.putExtra(TTS.MESSAGE_STRING,"Πες μου εντολή");
+            in.putExtra(TTS.HAS_RECOGNITION_EXTRA,true);
+            in.putExtra(TTS.HAS_WIT_EXTRA,true);
+            mService.StartSpeak(in);
 
+        }
     }
 
 
@@ -252,5 +254,23 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
             Init();
         }
     }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            TTS.LocalBinder binder = (TTS.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
 
 }

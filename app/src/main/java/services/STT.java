@@ -4,7 +4,9 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -23,6 +25,8 @@ import static android.content.ContentValues.TAG;
 
 public class STT extends Service implements RecognitionListener {
 
+    private final IBinder mBinder = new LocalBinder();
+
 
     public static final String HAS_WIT = "hasWit";
     private String LOG_TAG = null;
@@ -30,17 +34,26 @@ public class STT extends Service implements RecognitionListener {
     private Intent SpeechIntent;
     private SpeechRecognizer speech;
     private boolean hasWit;
+    Handler mainHandler;
 
     /**
      * Called by the system when the service is first created.  Do not call this method directly.
      */
+    public class LocalBinder extends Binder {
+        public STT getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return STT.this;
+        }
+    }
+
+
+
     @Override
     public void onCreate() {
         super.onCreate();
+        mainHandler = new Handler();
         LOG_TAG = this.getClass().getSimpleName();
         Log.i(LOG_TAG, "In onCreate");
-
-        /* Init Recognition */
         speech = SpeechRecognizer.createSpeechRecognizer(getApplicationContext());
         speech.setRecognitionListener(this);
         SpeechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -52,13 +65,12 @@ public class STT extends Service implements RecognitionListener {
         SpeechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
 
 
-
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mBinder;
     }
 
     /**
@@ -100,8 +112,10 @@ public class STT extends Service implements RecognitionListener {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        hasWit = intent.getBooleanExtra(TTS.HAS_WIT_EXTRA,false);
-        speech.startListening(SpeechIntent);
+        /* Init Recognition */
+
+
+
         return START_NOT_STICKY;
     }
 
@@ -186,17 +200,28 @@ public class STT extends Service implements RecognitionListener {
         }
     }
 
-
     @Override
     public void onPartialResults(Bundle partialResults) {
         Intent intent = new Intent("SpeechPartialResults");
         intent.putExtra("Speech",partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).get(0));
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-
+        Log.d("PARTIAL","PARTIAL");
     }
 
     @Override
     public void onEvent(int eventType, Bundle params) {
+
+    }
+
+    public void startlisten(Boolean hasWitfromtts){
+        hasWit = hasWitfromtts;
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+
+                speech.startListening(SpeechIntent);
+            }
+        });
 
     }
 }

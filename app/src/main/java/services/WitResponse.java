@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
@@ -21,6 +22,9 @@ import java.util.Map;
 import ai.wit.sdk.Wit;
 import utils.SearchStringHelper;
 import utils.jsonparsers.Witobj;
+import utils.Constants;
+
+import static utils.Constants.MaestroComm;
 
 /**
  * Created by bill on 11/4/17.
@@ -28,7 +32,6 @@ import utils.jsonparsers.Witobj;
 
 public class WitResponse extends AsyncTask<String, Void, Witobj> {
 
-    public static final String BROADCAST_ACTION = "WitResponse";
     public static final int STATUS_ERROR_COMMAND = 0;
     private static final String TAG = WitResponse.class.getSimpleName();
     private static final String witurl = "https://api.wit.ai/message?v=20171106&q=";
@@ -37,15 +40,14 @@ public class WitResponse extends AsyncTask<String, Void, Witobj> {
     private WeakReference<Context> contextWeakReference;
 
 
-
     public WitResponse(Context context) {
         contextWeakReference = new WeakReference<Context>(context);
     }
 
     @Override
     protected void onPostExecute(Witobj response) {
-        Intent intent = new Intent(BROADCAST_ACTION);
-        intent.putExtra("TAG","received!!");
+        Intent intent = new Intent(MaestroComm);
+        intent.putExtra("WitOBJ", response);
         LocalBroadcastManager.getInstance(contextWeakReference.get()).sendBroadcast(intent);
 
     }
