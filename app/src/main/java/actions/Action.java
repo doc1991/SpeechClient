@@ -16,9 +16,7 @@ import java.util.ArrayList;
 public class Action {
     //Config Variables
     private String TAG = "ActionClass";
-    public LocalBroadcastManager localmanager = null;
-    public Intent intent = null;
-    public String IntentAction = "";
+    public String IntentAction = null;
     public Uri IntentURIprefix = Uri.EMPTY;
     public String UriQuery = "";
     public int Flags = Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK;
@@ -27,8 +25,7 @@ public class Action {
     public boolean RequiresVerification = false;
     public boolean MultiStageComm = false;
     public boolean RequiresUri = false;
-    public int Stage = 0;
-    public int StatusCode = 0;
+    public String Stage = "IN";
 
     //Messages
     public String VERIFY_MESSAGE = "";
@@ -52,17 +49,9 @@ public class Action {
     }
 
     //Run the Intent
-    public int runIntent(Context con, Boolean verified) {
+    public void runIntent(Context con) {
         Intent curIntent = CreateIntent();
-        if (RequiresVerification && !verified) {
-            StatusCode = 1;
-            Log.d(TAG, "Activity Requires User Verification");
-            return StatusCode;
-        } else {
-            con.startActivity(curIntent);
-            StatusCode = 2;
-            return StatusCode;
-        }
+        con.startActivity(curIntent);
     }
 
     //Helper Classes
@@ -86,6 +75,27 @@ public class Action {
             }
         }
         return empties;
+    }
+
+    public void reset() {
+
+        IntentAction = null;
+        IntentURIprefix = Uri.EMPTY;
+        UriQuery = "";
+        IntentMimeType = "";
+        Extras = new Bundle();
+        RequiresVerification = false;
+        MultiStageComm = false;
+        RequiresUri = false;
+        Stage = "IN";
+
+        //Messages
+        VERIFY_MESSAGE = "";
+        DATA_REQUESTS = new ArrayList<>();
+        ACTION_FAILED = "";
+        NOT_FOUND = "";
+        LAUNCHED = "";
+
     }
 }
 
