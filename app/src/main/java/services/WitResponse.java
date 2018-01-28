@@ -119,8 +119,7 @@ public class WitResponse extends AsyncTask<String, Void, Witobj> {
         Witobj resp = null;
         try{
             resp = new Gson().fromJson(result, Witobj.class);
-            Log.d(TAG,resp.getEntities().getAppData().get(0).getValue());
-            Log.d(TAG,resp.getEntities().getIntent().get(0).getValue());
+
         }
         finally {
 

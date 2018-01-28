@@ -18,14 +18,17 @@ public class Action {
     //Config Variables
     private String TAG = "ActionClass";
     public String IntentAction = null;
+    public String type = "";
     public Uri IntentURIprefix = Uri.EMPTY;
     public String UriQuery = "";
     public int Flags = Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK;
     public boolean RequiresVerification = false;
-    public boolean MultiStageComm = false;
+    public boolean MultiStageCommFromStart = false;
     public boolean RequiresUri = false;
     public HashMap<String,String> data = new HashMap<>();
     public HashMap<String,String> data_requests = new HashMap<>();
+    public boolean waiting_data = false;
+    public String Current_Key = "";
     public String Stage = "IN";
 
     //Messages

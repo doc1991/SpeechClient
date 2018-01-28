@@ -60,7 +60,6 @@ public class STT extends Service implements RecognitionListener {
         SpeechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         SpeechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         SpeechIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getApplicationContext().getPackageName());
-        SpeechIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
         SpeechIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 10);
         SpeechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
 
@@ -113,9 +112,6 @@ public class STT extends Service implements RecognitionListener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         /* Init Recognition */
-
-
-
         return START_NOT_STICKY;
     }
 
@@ -165,7 +161,7 @@ public class STT extends Service implements RecognitionListener {
      */
     @Override
     public void onEndOfSpeech() {
-
+        Log.d(TAG,"END OF SPEECH");
     }
 
     /**
@@ -175,6 +171,10 @@ public class STT extends Service implements RecognitionListener {
      */
     @Override
     public void onError(int error) {
+        Log.d(TAG,"ERROR: " + Integer.toString(error));
+        if (error == 8){
+            this.stopSelf();
+        }
 
     }
 
@@ -194,10 +194,6 @@ public class STT extends Service implements RecognitionListener {
 
     @Override
     public void onPartialResults(Bundle partialResults) {
-        Intent intent = new Intent("SpeechPartialResults");
-        intent.putExtra("Speech",partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).get(0));
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-        Log.d("PARTIAL","PARTIAL");
     }
 
     @Override

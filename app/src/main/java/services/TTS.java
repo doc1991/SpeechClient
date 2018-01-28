@@ -50,6 +50,7 @@ public class TTS extends Service implements TextToSpeech.OnInitListener {
         tts.setPitch(1.3f);
         tts.setSpeechRate(1f);
         Intent sst = new Intent(getApplicationContext(),STT.class);
+        startService(sst);
         bindService(sst,mConnection, Context.BIND_AUTO_CREATE);
     }
 

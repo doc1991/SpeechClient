@@ -29,6 +29,7 @@ public class Maestro extends Service {
     private int RETRY_FLAG = 0;
     private int RETRY_LIMIT = 5;
     private boolean HAS_APP = false;
+    Action app = new Action();
     TTS ttsService;
     boolean ttsbound = false;
 
@@ -60,7 +61,7 @@ public class Maestro extends Service {
     private void CommandReceived(Intent intent){
         String sender1 = intent.getStringExtra("Sender");
         Log.d(TAG, sender1);
-        Action app = new Action();
+
 
         //Button Press
         if(sender1.equals("BTN")){
@@ -82,7 +83,7 @@ public class Maestro extends Service {
             //IF response = null
             //Retry to catch user command - ends after RETRY_LIMIT
 
-            if(resp.getEntities() == null && resp.getText() == null){
+            if(resp.getEntities() == null){
                 if (RETRY_FLAG < RETRY_LIMIT){
                     speak(getString(R.string.command_repeat),true);
                 }
@@ -93,19 +94,52 @@ public class Maestro extends Service {
             }
 
 
-            //Response parcelable
+            //Initialization Phase
             if (app.Stage.equals("IN")){
                 String type = resp.getEntities().getIntent().get(0).getValue();
                 app = Switcher.selectActionbyType(app,type);
-                Log.d(TAG,app.IntentAction.toString());
             }
+
+            //Data Fill Phase
             if (app.Stage.equals("CH")){
+
+                //One time no multistage comminicators to pass data from appdata
+                if(!app.MultiStageCommFromStart && resp.getEntities().getAppData() != null && resp.getEntities().getAppData().get(0).getConfidence()> 0.8){
+                    app.data.put(app.Current_Key,resp.getEntities().getAppData().get(0).getValue());
+                }
+
+                //Multi stage comm gatherer
+                if(resp.getText() != null && app.waiting_data){
+                    app.data.put(app.Current_Key,resp.getText());
+                }
+
+                //Multi Stage comm Loop
+                for(String key:app.data.keySet()) {
+                    if (app.data.get(key) == null) {
+                    speak(app.data_requests.get(key),true);
+                    app.Current_Key = key;
+                    app.waiting_data = true;
+                        break;
+                    }
+                    else{
+                        app.Stage = "TR";
+                        }
+                }
             }
-            if (app.Stage.equals("AS")){
+            if (app.Stage.equals("TR")){
+                app = Switcher.transforminfo(app,getApplicationContext());
+                Log.d(TAG,app.data.get(app.Current_Key));
             }
+
             if (app.Stage.equals("VR")){
+
             }
             if (app.Stage.equals("CP")){
+                app.runIntent(getApplicationContext());
+            }
+
+            if (app.Stage.equals("NF")){
+                speak(app.NOT_FOUND,false);
             }
         }
     }
