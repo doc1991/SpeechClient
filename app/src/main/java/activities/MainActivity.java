@@ -34,6 +34,7 @@ import com.example.bill.Activities.R;
 
 import activities.permission.PermissionActivity;
 import activities.settings.SettingsActivity;
+import services.Maestro;
 import services.STT;
 import services.TTS;
 import services.WitResponse;
@@ -46,7 +47,7 @@ import services.WitResponse;
 public class MainActivity extends PermissionActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     // private ResponseReceiver receiver;
-    private static final String TAG = "BtroadCast";
+    private static final String TAG = "Broadcast";
     SharedPreferences sharedPref;
     private TextView response;
     private ToggleButton btnIput;
@@ -86,18 +87,13 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
     @Override
     protected void onResume() {
         super.onResume();
-        IntentFilter iff= new IntentFilter(WitResponse.BROADCAST_ACTION);
-        LocalBroadcastManager.getInstance(this).registerReceiver(WitBrodcastReceiver,iff);
 
+        //Start MAESTRO Service for multiplexing the applications
+        Intent in = new Intent(getApplicationContext(), Maestro.class);
+        startService(in);
     }
 
-    //Broadcast Receivers Endpoints
-    private BroadcastReceiver WitBrodcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, intent.getExtras().toString());
-        }
-    };
+
 
     //Button Endpoints
     public void onBtnClick(View view){
