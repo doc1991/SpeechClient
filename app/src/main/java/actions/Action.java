@@ -8,6 +8,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by gvol on 17/12/2017.
@@ -20,16 +21,15 @@ public class Action {
     public Uri IntentURIprefix = Uri.EMPTY;
     public String UriQuery = "";
     public int Flags = Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK;
-    public String IntentMimeType = "";
-    public Bundle Extras = new Bundle();
     public boolean RequiresVerification = false;
     public boolean MultiStageComm = false;
     public boolean RequiresUri = false;
+    public HashMap<String,String> data = new HashMap<>();
+    public HashMap<String,String> data_requests = new HashMap<>();
     public String Stage = "IN";
 
     //Messages
     public String VERIFY_MESSAGE = "";
-    public ArrayList<String> DATA_REQUESTS = new ArrayList<>();
     public String ACTION_FAILED = "";
     public String NOT_FOUND = "";
     public String LAUNCHED = "";
@@ -38,15 +38,6 @@ public class Action {
     public Action() {
     }
 
-    //Check for MissingAttributes
-    public ArrayList<String> checkMissingAttributes() {
-        ArrayList<String> Attributes = new ArrayList<>();
-        if (RequiresUri && UriQuery.equals("")) {
-            Attributes.add("UriQuery");
-        }
-        Attributes.addAll(getEmptyExtras(Extras));
-        return Attributes;
-    }
 
     //Run the Intent
     public void runIntent(Context con) {
@@ -77,25 +68,6 @@ public class Action {
         return empties;
     }
 
-    public void reset() {
 
-        IntentAction = null;
-        IntentURIprefix = Uri.EMPTY;
-        UriQuery = "";
-        IntentMimeType = "";
-        Extras = new Bundle();
-        RequiresVerification = false;
-        MultiStageComm = false;
-        RequiresUri = false;
-        Stage = "IN";
-
-        //Messages
-        VERIFY_MESSAGE = "";
-        DATA_REQUESTS = new ArrayList<>();
-        ACTION_FAILED = "";
-        NOT_FOUND = "";
-        LAUNCHED = "";
-
-    }
 }
 

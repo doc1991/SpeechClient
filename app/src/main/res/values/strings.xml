@@ -41,7 +41,7 @@
     <string name="settings_title">Ρυθμίσεις</string>
     <string name="continuous_setting"> Συνεχής αναγνώριση</string>
     <string name="switch_continuous">switch_continuous</string>
-    <string name="command_repeat">Παρακαλώ, επαναλάβετε την εντολή</string>
+    <string name="command_repeat">Παρακαλώ, επαναλάβετε.</string>
     <string name="retry_silent_stop">Προσπαθήστε ξανά κάπου πιό ήσυχα.</string>
     <string name="helper_prompt">Παρακαλώ, πείτε μου πως μπορώ να βοηθήσω</string>
 

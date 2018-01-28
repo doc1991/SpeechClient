@@ -16,9 +16,11 @@ import android.util.Log;
 import com.example.bill.Activities.R;
 
 import actions.Action;
+import actions.Switcher;
 import utils.Constants;
 import utils.ContactUtils;
 import utils.jsonparsers.Witobj;
+import actions.Switcher.*;
 
 public class Maestro extends Service {
 
@@ -26,6 +28,7 @@ public class Maestro extends Service {
     private final IBinder mBinder = new LocalBinder();
     private int RETRY_FLAG = 0;
     private int RETRY_LIMIT = 5;
+    private boolean HAS_APP = false;
     TTS ttsService;
     boolean ttsbound = false;
 
@@ -63,6 +66,7 @@ public class Maestro extends Service {
         if(sender1.equals("BTN")){
             // Retry flag initialization for the NULL loop of WIT
             RETRY_FLAG = 0;
+            app = new Action();
             speak(getString(R.string.helper_prompt),true);
         }
 
@@ -75,11 +79,10 @@ public class Maestro extends Service {
         if(sender1.equals("WIT")){
             Witobj resp = (Witobj) intent.getSerializableExtra("WitOBJ");
 
-
             //IF response = null
             //Retry to catch user command - ends after RETRY_LIMIT
 
-            if(resp.getEntities() == null){
+            if(resp.getEntities() == null && resp.getText() == null){
                 if (RETRY_FLAG < RETRY_LIMIT){
                     speak(getString(R.string.command_repeat),true);
                 }
@@ -93,24 +96,18 @@ public class Maestro extends Service {
             //Response parcelable
             if (app.Stage.equals("IN")){
                 String type = resp.getEntities().getIntent().get(0).getValue();
-
+                app = Switcher.selectActionbyType(app,type);
+                Log.d(TAG,app.IntentAction.toString());
             }
             if (app.Stage.equals("CH")){
-
             }
             if (app.Stage.equals("AS")){
-
             }
             if (app.Stage.equals("VR")){
-
             }
-            if (app.Stage.equals())
-
-
-
+            if (app.Stage.equals("CP")){
+            }
         }
-
-
     }
 
 
