@@ -189,15 +189,7 @@ public class STT extends Service implements RecognitionListener {
     @Override
     public void onResults(Bundle results) {
         String query = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).get(0);
-
-
-        Intent intent = new Intent("SpeechResults");
-        intent.putExtra("Speech",query);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-        if(hasWit){
-            Log.d(TAG,query);
-            new WitResponse(getApplicationContext()).execute(query);
-        }
+        new WitResponse(getApplicationContext()).execute(query);
     }
 
     @Override
@@ -213,12 +205,10 @@ public class STT extends Service implements RecognitionListener {
 
     }
 
-    public void startlisten(Boolean hasWitfromtts){
-        hasWit = hasWitfromtts;
+    public void startlisten(){
         mainHandler.post(new Runnable() {
             @Override
             public void run() {
-
                 speech.startListening(SpeechIntent);
             }
         });

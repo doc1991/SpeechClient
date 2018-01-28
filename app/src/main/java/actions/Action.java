@@ -27,6 +27,7 @@ public class Action {
     public boolean RequiresVerification = false;
     public boolean MultiStageComm = false;
     public boolean RequiresUri = false;
+    public int Stage = 0;
     public int StatusCode = 0;
 
     //Messages

@@ -47,6 +47,7 @@ public class WitResponse extends AsyncTask<String, Void, Witobj> {
     @Override
     protected void onPostExecute(Witobj response) {
         Intent intent = new Intent(MaestroComm);
+        intent.putExtra("Sender","WIT");
         intent.putExtra("WitOBJ", response);
         LocalBroadcastManager.getInstance(contextWeakReference.get()).sendBroadcast(intent);
 

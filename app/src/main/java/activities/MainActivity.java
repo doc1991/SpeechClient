@@ -38,6 +38,7 @@ import services.Maestro;
 import services.STT;
 import services.TTS;
 import services.WitResponse;
+import utils.Constants;
 
 /**
  * Created by bill on 11/20/17.
@@ -55,8 +56,9 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
     private ProgressBar WaitAction;
     private Toolbar toolbar;
     private boolean exit, assistantBound;
-    TTS mService;
+    Maestro mService;
     boolean mBound = false;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,8 +87,9 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
         super.onStart();
 
         //Bind to Services
-        Intent intent = new Intent(this,TTS.class);
+        Intent intent = new Intent(this,Maestro.class);
         bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
+        startService(intent);
     }
 
     @Override
@@ -98,17 +101,10 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
 
     //Button Endpoints
     public void onBtnClick(View view){
-        if (mBound){
-            Intent in = new Intent(getApplicationContext(), TTS.class);
-            in.putExtra(TTS.MESSAGE_STRING,"Πες μου εντολή");
-            in.putExtra(TTS.HAS_RECOGNITION_EXTRA,true);
-            in.putExtra(TTS.HAS_WIT_EXTRA,true);
-            mService.StartSpeak(in);
-
+        Intent btnint = new Intent(Constants.MaestroComm);
+        btnint.putExtra("Sender","BTN");
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(btnint);
         }
-    }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -217,26 +213,6 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
     private void setText() {
     }
 
-    private void clearProgressBar() {
-        progressBar.setIndeterminate(false);
-        progressBar.setVisibility(View.INVISIBLE);
-    }
-
-    private void clearWaitBar() {
-        WaitAction.setIndeterminate(false);
-        WaitAction.setVisibility(View.INVISIBLE);
-    }
-
-    private void showProgressBar() {
-        progressBar.setIndeterminate(true);
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
-    private void showWaitBar() {
-        WaitAction.setIndeterminate(true);
-        WaitAction.setVisibility(View.VISIBLE);
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -261,7 +237,7 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             // We've bound to LocalService, cast the IBinder and get LocalService instance
-            TTS.LocalBinder binder = (TTS.LocalBinder) service;
+            Maestro.LocalBinder binder = (Maestro.LocalBinder) service;
             mService = binder.getService();
             mBound = true;
         }

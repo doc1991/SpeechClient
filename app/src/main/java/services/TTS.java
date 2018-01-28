@@ -9,10 +9,13 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Locale;
+
+import utils.Constants;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -23,10 +26,10 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 public class TTS extends Service implements TextToSpeech.OnInitListener {
 
     private final IBinder mBinder = new LocalBinder();
+    private final String TAG = "TTS Debug";
 
     public static final String MESSAGE_STRING = "Message";
     public static final String HAS_RECOGNITION_EXTRA = "HasRecognition";
-    public static final String HAS_WIT_EXTRA = "HasWit";
     private static final HashMap<String, String> map = new HashMap<String, String>();
     private TextToSpeech tts;
     private String msg;
@@ -35,14 +38,6 @@ public class TTS extends Service implements TextToSpeech.OnInitListener {
     STT sstService;
     boolean mBound = false;
 
-
-
-    public class LocalBinder extends Binder {
-        public TTS getService() {
-            // Return this instance of LocalService so clients can call public methods
-            return TTS.this;
-        }
-    }
 
 
 
@@ -62,13 +57,9 @@ public class TTS extends Service implements TextToSpeech.OnInitListener {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("TAG","StartCommand");
 
+
         return super.onStartCommand(intent, flags, startId);
 
-    }
-
-
-    public IBinder onBind(Intent intent) {
-        return mBinder;
     }
 
     @Override
@@ -87,8 +78,14 @@ public class TTS extends Service implements TextToSpeech.OnInitListener {
                     if (hasRecognition){
                         if(mBound){
                             Log.d("DEBUG","BOUND TO START LISTEN");
-                            sstService.startlisten(hasWit);
+                            sstService.startlisten();
                         }
+                    }
+                    else{
+                        Intent broadcast = new Intent(Constants.MaestroComm);
+                        broadcast.putExtra("Sender","TTS");
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(broadcast);
+                        Log.d(TAG,"Broadcasted");
                     }
 
                 }
@@ -106,8 +103,8 @@ public class TTS extends Service implements TextToSpeech.OnInitListener {
     public void StartSpeak(Intent intent){
         msg = intent.getStringExtra(MESSAGE_STRING);
         hasRecognition = intent.getBooleanExtra(HAS_RECOGNITION_EXTRA,false);
-        hasWit = intent.getBooleanExtra(HAS_WIT_EXTRA,false);
         tts.speak(msg, TextToSpeech.QUEUE_FLUSH, map);
+
     }
 
     public void cancel() {
@@ -119,6 +116,7 @@ public class TTS extends Service implements TextToSpeech.OnInitListener {
     }
 
 
+    //Bind - Binder Boilerplate
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -136,4 +134,14 @@ public class TTS extends Service implements TextToSpeech.OnInitListener {
         }
     };
 
+    public class LocalBinder extends Binder {
+        public TTS getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return TTS.this;
+        }
+    }
+
+    public IBinder onBind(Intent intent) {
+        return mBinder;
+    }
 }
