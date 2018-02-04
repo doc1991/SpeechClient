@@ -51,7 +51,7 @@ public class SearchStringHelper {
                 Log.i(TAG, "best match is: " + bestmatch);
             }
 
-            if (max_match > 0.75) {
+            if (max_match > 0.85) {
                 result.put(bestmatch, max_match);
             }
         }
@@ -61,6 +61,8 @@ public class SearchStringHelper {
         if (result.size() > 1) {
 
             for (Map.Entry<String, Double> entry : result.entrySet()) {
+                Log.i(TAG, "matches results : " + entry.getKey()+" "+entry.getValue() );
+
                 if (entry.getValue() > 0.9)
                     finalResult.put(entry.getKey(), entry.getValue());
 
