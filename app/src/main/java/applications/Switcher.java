@@ -17,7 +17,7 @@ public class Switcher {
             app = InitActionObj(
                     app,type,Constatns.ACTION_CALL,true,"contact",
                     "Πείτε μου το όνομα της επαφής","tel:",
-                    false,"Η επαφή δεν βρέθηκε.","CH"
+                    false,"Η επαφή δεν βρέθηκε.",Constatns.CH_STAGE,"Επιθυμείτε να πραγματοποιηθεί το τηλεφώνημα"
             );
         }
         return app;
@@ -43,7 +43,7 @@ public class Switcher {
 
     private static Action InitActionObj(Action app,String type,String IntentAction,boolean requiresUri,
                                         String AppName,String SoundMessage,String uri,
-                                        boolean MultiStageCommFromStart,String NOT_FOUND,String Stage
+                                        boolean MultiStageCommFromStart,String NOT_FOUND,String Stage,String VerifyMessage
                                         ){
 
         app.type = type;
@@ -56,6 +56,7 @@ public class Switcher {
         app.MultiStageCommFromStart = MultiStageCommFromStart;
         app.NOT_FOUND = NOT_FOUND;
         app.Stage = Stage;
+        app.VERIFY_MESSAGE =VerifyMessage;
         return app;
 
     }
