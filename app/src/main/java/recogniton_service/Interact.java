@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.bill.Activities.R;
 
@@ -57,9 +58,10 @@ public abstract class Interact extends SpeechService {
         }
 
         //Speech end without user feedback
-        if(sender1.equals("TTS")){
+        /*if(sender1.equals("TTS")){
+            Log.i(TAG,"end without feedback");
 
-        }
+        }*/
 
         //Wit Object Response
         if(sender1.equals("WIT")){
@@ -69,7 +71,11 @@ public abstract class Interact extends SpeechService {
             //IF response = null
             //Retry to catch user command - ends after RETRY_LIMIT
 
-            if(resp.getEntities() == null){
+
+            Log.i(TAG,"stage is : "+app.Stage);
+
+            if(resp.getEntities().getIntent() == null && app.Stage.equals(Constatns.IN_STAGE)){
+                app.Stage ="NS";
                 if (RETRY_FLAG < RETRY_LIMIT){
                     speak(getString(R.string.command_repeat),true);
                 }
@@ -122,12 +128,13 @@ public abstract class Interact extends SpeechService {
 
             if (app.Stage.equals(Constatns.VR_STAGE)){
 
-                speak(getString(R.string.make_call_question),true);
+                speak(app.VERIFY_MESSAGE,true);
                 Log.i(TAG,"result= "+result);
 
 
 
             }
+            Log.i(TAG,"stage after vr is : "+app.Stage);
             if (app.Stage.equals(Constatns.RUN_STAGE)){
                 app.runIntent(getApplicationContext());
                 app.Stage = Constatns.CP_STAGE;
@@ -145,6 +152,12 @@ public abstract class Interact extends SpeechService {
                 app.Init();
                 SendMessage("");
             }
+            if(app.Stage.equals("NS")){
+                app.Stage=Constatns.IN_STAGE;
+                app.Init();
+                SendMessage("");
+            }
+
 
         }
     }
@@ -177,5 +190,14 @@ public abstract class Interact extends SpeechService {
         }
     }
 
-
+    @Override
+    public void OnSpeechError(int Error) {
+        super.OnSpeechError(Error);
+        //isinteractive = false;
+        if (isActivated()) {
+            setActivated(false);
+            app.Init();
+            SendMessage("");
+        }
+    }
 }
