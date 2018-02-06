@@ -25,6 +25,7 @@ public abstract class SpeechService extends ServiceHelper  {
     public static final String HAS_WIT = "hasWit";
     private String msg ="";
     private boolean hasWit;
+
     //broadcast for actions on clicking notification
     private final BroadcastReceiver NotAction = new BroadcastReceiver() {
         @Override
@@ -38,20 +39,10 @@ public abstract class SpeechService extends ServiceHelper  {
 
             }
         }
-    };/**/
+    };
+
     private Intent broadcastIntent;
 
-    //this boolean helps to know if a command wait one respond from user or more
-    /*private boolean isinteractive = false;
-
-    public boolean isIsinteractive() {
-        return isinteractive;
-    }
-
-    public void setIsinteractive(boolean isinteractive) {
-        this.isinteractive = isinteractive;
-    }
-    */
     @Override
     public void onCreate() {
         super.onCreate();
@@ -103,9 +94,6 @@ public abstract class SpeechService extends ServiceHelper  {
 
 
         if (isActivated() ) {
-            //connect to wit and get message
-            //wit_connection.WitResponse witResponse = new WitResponse(this);
-            //witResponse.execute(Result);
             new WitResponse(getApplicationContext()).execute(Result);
         } else if (Result.equals(getResources().getString(R.string.title_activity_gui))) {
             Mute(false);
@@ -117,36 +105,9 @@ public abstract class SpeechService extends ServiceHelper  {
     @Override
     public void OnSpeechError(int Error) {
         super.OnSpeechError(Error);
-        //isinteractive = false;
 
     }
 
-
-    //methods of WitResponseMessage listener
-   /*
-    @Override
-    public void ErrorCommand(int msg) {
-        Log.i(TAG, "Error command status is " + msg);
-        if (!isinteractive && isActivated()) {
-            SendMessage("");
-            StartMessage(this.getResources().getString(R.string.Error_Command));
-        }
-    }
-
-    @Override
-    public void Message(String search, String application, String conf) {
-        Log.i(TAG, "Search parameter is  " + search + " application kind is" + application);
-        SendMessage("");
-        Log.i(TAG, "Interactive boolean is  " + isinteractive);
-        if (!isinteractive) {
-            Intent newint = new Intent(this, AppIntentService.class);
-            newint.putExtra(AppIntentService.APP_KIND, application);
-            newint.putExtra(AppIntentService.QUERY, search);
-            startService(newint);
-        }
-    }
-
-*/
     //send message to activity
     protected void SendMessage(String msg) {
         Log.i(TAG, "message of sendmessage method  is   " + msg);

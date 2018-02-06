@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -85,13 +86,18 @@ public abstract class Interact extends SpeechService {
                 RETRY_FLAG = RETRY_FLAG + 1;
             }
 
-
             //Initialization Phase
             if (app.Stage.equals(Constatns.IN_STAGE)){
 
                 String type = resp.getEntities().getIntent().get(0).getValue();
-                Log.i(TAG,"type = "+type);
+                if(resp.getEntities().getAppData() !=null){
+                    if(Switcher.IsTelNumber(type,resp.getEntities().getAppData().get(0).getValue()) )
+                        app.IsTelNumber = true;
+                }
+
                 app = Switcher.selectActionbyType(app,type);
+                Log.i(TAG,"type is : "+type+" is tel number : " +app.IsTelNumber );
+
             }
 
             //Data Fill Phase
@@ -99,51 +105,64 @@ public abstract class Interact extends SpeechService {
 
                 //One time no multistage comminicators to pass data from appdata
                 if(!app.MultiStageCommFromStart && resp.getEntities().getAppData() != null && resp.getEntities().getAppData().get(0).getConfidence()> 0.8){
+                    Log.i(TAG,"data of not multistage"+resp.getEntities().getAppData().get(0).getValue());
+
                     app.data.put(app.Current_Key,resp.getEntities().getAppData().get(0).getValue());
                 }
 
                 //Multi stage comm gatherer
                 if(resp.getText() != null && app.waiting_data){
                     app.data.put(app.Current_Key,resp.getText());
-                    Log.i(TAG,"data value = "+resp.getText());
+                    Log.i(TAG,"multistage data  = "+resp.getText());
                 }
 
-                //Multi Stage comm Loop
-                for(String key:app.data.keySet()) {
-                    Log.i(TAG,"data value = "+app.data.get(key));
-                    if (app.data.get(key) == null) {
-                        speak(app.data_requests.get(key),true);
-                        app.Current_Key = key;
-                        app.waiting_data = true;
-                        break;
+
+                if(!app.IsTelNumber) {
+                    //Multi Stage comm Loop
+                    for (String key : app.data.keySet()) {
+                        Log.i(TAG,"multistage data in comm loop = "+app.data.get(key));
+
+                        if (app.data.get(key) == null) {
+                            speak(app.data_requests.get(key), true);
+                            app.Current_Key = key;
+                            app.waiting_data = true;
+                            break;
+                        } else {
+                            app.Stage = Constatns.TR_STAGE;
+                        }
                     }
-                    else{
-                        app.Stage = Constatns.TR_STAGE;
-                    }
+                }else {
+                    Log.i(TAG,"data if is tel number = "+resp.getEntities().getAppData().get(0).getValue());
+
+                    app.data.put(app.Current_Key,resp.getEntities().getAppData().get(0).getValue());
+                    app.Stage = Constatns.TR_STAGE;
                 }
+
             }
             if (app.Stage.equals(Constatns.TR_STAGE)){
+                Log.i(TAG,"data in tr stage = "+app.data.get(app.Current_Key));
+
                 app = Switcher.transforminfo(app,getApplicationContext());
             }
 
             if (app.Stage.equals(Constatns.VR_STAGE)){
 
                 speak(app.VERIFY_MESSAGE,true);
-                Log.i(TAG,"result= "+result);
-
-
-
+                Log.i(TAG,"entered in vr stage= ");
             }
-            Log.i(TAG,"stage after vr is : "+app.Stage);
+
+
             if (app.Stage.equals(Constatns.RUN_STAGE)){
                 app.runIntent(getApplicationContext());
                 app.Stage = Constatns.CP_STAGE;
+                Log.i(TAG,"entered in run stage= ");
             }
 
             if (app.Stage.equals(Constatns.NF_STAGE)){
 
                 speak(app.NOT_FOUND,false);
-                Log.i(TAG,"message not found  = "+app.NOT_FOUND);
+                Log.i(TAG,"entered in not found stage= ");
+                app.Stage = Constatns.CP_STAGE;
 
             }
             if (app.Stage.equals(Constatns.CP_STAGE)){
@@ -151,11 +170,13 @@ public abstract class Interact extends SpeechService {
                 setActivated(false);
                 app.Init();
                 SendMessage("");
+                Log.i(TAG,"entered in cp stage= ");
             }
             if(app.Stage.equals("NS")){
                 app.Stage=Constatns.IN_STAGE;
                 app.Init();
                 SendMessage("");
+                Log.i(TAG,"entered in ns stage= ");
             }
 
 

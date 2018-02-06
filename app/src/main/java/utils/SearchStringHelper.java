@@ -68,7 +68,7 @@ public class SearchStringHelper {
 
             }
         } else {
-            if (max_match < 0.75) {
+            if (max_match < 0.82) {
                 finalResult.put("no_match", max_match);
 
             } else {

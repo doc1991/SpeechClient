@@ -29,6 +29,7 @@ public class Action {
     public boolean waiting_data = false;
     public String Current_Key = "";
     public String Stage = Constatns.IN_STAGE;
+    public boolean IsTelNumber=false;
 
     //Messages
     public String VERIFY_MESSAGE = "";
@@ -56,7 +57,7 @@ public class Action {
          waiting_data = false;
         Current_Key = "";
          Stage = Constatns.IN_STAGE;
-
+        IsTelNumber=false;
         //Messages
        VERIFY_MESSAGE = "";
        ACTION_FAILED = "";
