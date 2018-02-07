@@ -90,21 +90,22 @@ public abstract class Interact extends SpeechService {
             if (app.Stage.equals(Constatns.IN_STAGE)){
 
                 String type = resp.getEntities().getIntent().get(0).getValue();
-                if(resp.getEntities().getAppData() !=null){
+                /*if(resp.getEntities().getAppData() !=null){
                     if(Switcher.IsTelNumber(type,resp.getEntities().getAppData().get(0).getValue()) )
                         app.IsTelNumber = true;
-                }
+                }*/
 
                 app = Switcher.selectActionbyType(app,type);
-                Log.i(TAG,"type is : "+type+" is tel number : " +app.IsTelNumber );
+                Log.i(TAG,"type is : "+type);
 
             }
 
             //Data Fill Phase
             if (app.Stage.equals(Constatns.CH_STAGE)){
-
+                //Log.i(TAG,"data of not multistage"+resp.getEntities().getAppData().get(0).getValue()+"confidence "+resp.getEntities().getAppData().get(0).getConfidence());
+               // Log.i(TAG,"data of not multistage"+app.MultiStageCommFromStart);
                 //One time no multistage comminicators to pass data from appdata
-                if(!app.MultiStageCommFromStart && resp.getEntities().getAppData() != null && resp.getEntities().getAppData().get(0).getConfidence()> 0.8){
+                if(!app.MultiStageCommFromStart && resp.getEntities().getAppData() != null && resp.getEntities().getAppData().get(0).getConfidence()> 0.8/**/){
                     Log.i(TAG,"data of not multistage"+resp.getEntities().getAppData().get(0).getValue());
 
                     app.data.put(app.Current_Key,resp.getEntities().getAppData().get(0).getValue());
@@ -117,7 +118,7 @@ public abstract class Interact extends SpeechService {
                 }
 
 
-                if(!app.IsTelNumber) {
+              //  if(!app.IsTelNumber) {
                     //Multi Stage comm Loop
                     for (String key : app.data.keySet()) {
                         Log.i(TAG,"multistage data in comm loop = "+app.data.get(key));
@@ -131,12 +132,12 @@ public abstract class Interact extends SpeechService {
                             app.Stage = Constatns.TR_STAGE;
                         }
                     }
-                }else {
+               /* }else {
                     Log.i(TAG,"data if is tel number = "+resp.getEntities().getAppData().get(0).getValue());
 
                     app.data.put(app.Current_Key,resp.getEntities().getAppData().get(0).getValue());
                     app.Stage = Constatns.TR_STAGE;
-                }
+                }*/
 
             }
             if (app.Stage.equals(Constatns.TR_STAGE)){
@@ -162,7 +163,7 @@ public abstract class Interact extends SpeechService {
 
                 speak(app.NOT_FOUND,false);
                 Log.i(TAG,"entered in not found stage= ");
-                app.Stage = Constatns.CP_STAGE;
+                //app.Stage = Constatns.CP_STAGE;
 
             }
             if (app.Stage.equals(Constatns.CP_STAGE)){
@@ -215,10 +216,10 @@ public abstract class Interact extends SpeechService {
     public void OnSpeechError(int Error) {
         super.OnSpeechError(Error);
         //isinteractive = false;
-        if (isActivated()) {
+        /*if (isActivated()) {
             setActivated(false);
             app.Init();
             SendMessage("");
-        }
+        }*/
     }
 }

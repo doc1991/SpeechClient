@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 import utils.ContactUtils;
 
 /**
@@ -28,22 +30,29 @@ public class Switcher {
     public static Action transforminfo (Action app, Context con){
         if (app.type.equals("make_call")){
 
-            String query = app.data.get("contact");
-            Log.i("Switcher","the user told : "+query );
-            if(ContactUtils.IsNumber(query)){
-                Log.i("Switcher","the user told number: "+query );
-                if (ContactUtils.IsCorrectNumber(query)) {
-                    app.data.put("contact", query);
-                    app.UriQuery = app.data.get("contact");
+            String contact = app.data.get("contact");
+            Log.i("Switcher","the user told : "+contact);
+            //Optimizing DB Calls
+            ArrayList<String> TelsfromDB = ContactUtils.ContactNumber(contact, con);
+            if (TelsfromDB.size() > 0 ) {
+
+                if(!TelsfromDB.get(0).equals("0") || !TelsfromDB.get(0).equals("1")){
+                    Log.i("switcher","data contact name = "+ TelsfromDB.get(0));
+
+                    app.UriQuery = TelsfromDB.get(0);
                     app.Stage = Constatns.VR_STAGE;
-                }else{
-                    app.NOT_FOUND = "Ο αριθμός δεν είναι σωστός";
+                }else if(TelsfromDB.get(0).equals("0")) {
+                    Log.i("switcher","data number = "+ TelsfromDB.get(0));
+                    //Strip Whitespace on raw number
+                    app.UriQuery = app.data.get("contact").replace(" ","");
+                    app.Stage = Constatns.VR_STAGE;
+                }
+                else if(TelsfromDB.get(0).equals("1")) {
+                    Log.i("switcher","data wrong number = "+ TelsfromDB.get(0));
+                    app.NOT_FOUND = "Μη έγκυρος αριθμός";
                     app.Stage = Constatns.NF_STAGE;
                 }
-            }else if (ContactUtils.ContactNumber(query,con).size() > 0 && !ContactUtils.IsNumber(query)) {
-                app.data.put("contact", ContactUtils.ContactNumber(app.data.get("contact"), con).get(0));
-                app.UriQuery = app.data.get("contact");
-                app.Stage = Constatns.VR_STAGE;
+
             }
             else {
 
@@ -54,16 +63,6 @@ public class Switcher {
         return app;
     }
 
-    public static boolean IsTelNumber(String type,String query){
-        if(type.equals("make_call") || type.equals("send_sms")  ){
-            if(ContactUtils.IsNumber(query)){
-                Log.i("debug is number",query);
-                return true;
-            }
-
-        }
-        return false;
-    }
 
     private static Action InitActionObj(Action app,String type,String IntentAction,boolean requiresUri,
                                         String AppName,String SoundMessage,String uri,

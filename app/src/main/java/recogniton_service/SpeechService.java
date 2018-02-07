@@ -94,6 +94,7 @@ public abstract class SpeechService extends ServiceHelper  {
 
 
         if (isActivated() ) {
+
             new WitResponse(getApplicationContext()).execute(Result);
         } else if (Result.equals(getResources().getString(R.string.title_activity_gui))) {
             Mute(false);

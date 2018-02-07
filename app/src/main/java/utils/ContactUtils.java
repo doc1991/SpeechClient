@@ -21,9 +21,22 @@ public class ContactUtils {
 
 
     private static final String TAG = "ContactUtils";
+
     public static ArrayList<String> ContactNumber(String query, Context context) {
         Log.i(TAG, "the text from user is " + query);
         ArrayList<String> tels = new ArrayList<>();
+
+
+        //Is Number Check
+        if(IsNumber(query)){
+            if(IsCorrectNumber(query))
+                tels.add("0");
+            else
+                tels.add("1");
+
+            tels.add(query);
+            return tels;
+        }
 
         //String for temporary name
         String name;
@@ -89,9 +102,13 @@ public class ContactUtils {
 
         if(query !=null) {
             Log.i(TAG, "phone number is " + query);
+
             query = query.replace(" ", "");
+
+
             if (MathUtils.isNumeric(query)) {
-                return true;
+
+                    return true;
             }
         }
         return false;
