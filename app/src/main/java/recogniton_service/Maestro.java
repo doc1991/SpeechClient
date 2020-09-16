@@ -70,17 +70,6 @@ public class Maestro extends Service {
     @Subscribe
     public void getWitResponse(Events.WitREsp event){
         String sender1 = event.getSender();
-
-        // Log.d(TAG, "the response url from wit is "+sender1);
-
-
-        //Button Press
-///        if(sender1.equals("BTN")){
-        // Retry flag initialization for the NULL loop of WIT
-        //   RETRY_FLAG = 0;
-        //app = new Action();
-
-        //Wit Object Response
         if(sender1.equals("WIT"))
         {
 
@@ -128,7 +117,7 @@ public class Maestro extends Service {
                 Log.i(TAG,"entered in data fill stage ");
 
 
-                //One time no multistage comminicators to pass data from appdata
+                //One time no multistage communicators to pass data from appdata
                 if( resp.getEntities().getAppData() != null && resp.getEntities().getAppData().get(0).getConfidence()> 0.8) {
 
                     app.data.put(app.Current_Key,resp.getEntities().getAppData().get(0).getValue());

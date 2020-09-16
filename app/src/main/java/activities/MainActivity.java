@@ -23,7 +23,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -36,10 +35,8 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import activities.permission.PermissionActivity;
 import activities.settings.SettingsActivity;
-import applications.Constatns;
 import butterknife.ButterKnife;
 import events.Events;
-import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 import recogniton_service.ForeGroundRecognition;
 import utils.AppPackagesUtils;
 
@@ -62,7 +59,6 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
     private boolean exit, assistantBound;
 
 
-
     private ServiceConnection speechConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
@@ -79,14 +75,14 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
     };
 
 
-
-    @Subscribe(sticky = true,threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(Events.PartialResults event ) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(Events.PartialResults event) {
         response.setText(event.getPartialResults());
     }
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    @Subscribe(sticky = true,threadMode = ThreadMode.MAIN)
-    public void isActivated(Events.ActivatedRecognition event ) {
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void isActivated(Events.ActivatedRecognition event) {
 
        /* if(!event.isActivated() && !speechService.isContinuous()){
             btnIput.performClick();
@@ -94,23 +90,18 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
         }*/
 
     }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        paused=false;
+        paused = false;
         EventBus.getDefault().register(this);
         setContentView(R.layout.activity_gui);
         sharedPref = getPreferences(Context.MODE_PRIVATE);
         exit = sharedPref.getBoolean("exit", true);
         Log.d("exit...", String.valueOf(exit));
         if (Build.VERSION.SDK_INT < 23) Init();
-
-
         ButterKnife.bind(this);
-
-
-
     }
 
     @Override
@@ -196,12 +187,10 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
 
         if (id == R.id.nav_action) {
 
-
         } else if (id == R.id.nav_about) {
 
         } else if (id == R.id.nav_manage) {
             startActivity(new Intent(this, SettingsActivity.class));
-
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -211,7 +200,6 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
     private void Init() {
 
         setButtons();
-
         setText();
         setToolbar();
         setDrawerLayout();
@@ -248,37 +236,28 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
         response.setText("");
     }
 
+   //Start Action with button press
     private void record() {
-
-
         btnIput.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
-
                 startRecord(b);
-
             }
-
         });
-
-
     }
-
-
 
     private void startRecord(boolean b) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean btn = sharedPref.getBoolean(getResources().getString(R.string.switch_continuous), false);
         //speechService.setContinuous(btn);
         if (AppPackagesUtils.isNetworkAvailable(this)) {
-            Log.i(TAG,"boolean ias"+b);
-            if( speechService.isFinishedTts()) {
+            Log.i(TAG, "boolean ias" + b);
+            if (speechService.isFinishedTts()) {
 
                 if (b) {
 
-                    paused=true;
-                    speechService.speak(getResources().getString(R.string.StartMessage),true);
+                    paused = true;
+                    speechService.speak(getResources().getString(R.string.StartMessage), true);
                     //showProgressBar();
                 } else {
 
@@ -289,12 +268,11 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
                 }
 
             }
-        }else {
-            Toast.makeText(this,getResources().getString(R.string.network_error),Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, getResources().getString(R.string.network_error), Toast.LENGTH_LONG).show();
         }
 
     }
-
 
 
     @Override

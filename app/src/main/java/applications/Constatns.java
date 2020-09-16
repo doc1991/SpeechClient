@@ -14,7 +14,7 @@ import android.support.annotation.RequiresApi;
 public class Constatns {
 
     public static final int FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP;
-    public  static final Action app = new Action();
+    public static final Action app = new Action();
 
     static final String YOUTUBE_PACKAGE = "com.google.android.youtube";
     static final String MAPS_PACKAGE = "com.google.android.apps.maps";
