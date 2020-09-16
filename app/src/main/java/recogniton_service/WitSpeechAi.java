@@ -53,7 +53,7 @@ public class WitSpeechAi extends Service implements TtsProgressListener {
         public void onReceive(Context context, Intent intent) {
             //Log.i(TAG, "activated is broadcast " + recognition.isActivated());
             //  if (recognition.isActivated()) {
-            //StopSrecognition();
+            //Stoprecognition();
             //  recognition.setActivated(false);
             // } else {
             //  speak(getResources().getString(R.string.StartMessage),true);
@@ -193,7 +193,7 @@ public class WitSpeechAi extends Service implements TtsProgressListener {
 
     }
 
-    public void StopSrecognition() {
+    public void Stoprecognition() {
         if (recorder == null) return;
         recordingInProgress.set(false);
         recorder.stop();
@@ -203,7 +203,7 @@ public class WitSpeechAi extends Service implements TtsProgressListener {
     }
 
     public void StartRecognition() {
-
+        Log.e("Error","Entering Recording");
         startService(new Intent(this, Maestro.class));
         httpClient = new OkHttpClient();
         httpBuilder = HttpUrl.parse("https://api.wit.ai/speech").newBuilder();
@@ -239,16 +239,11 @@ public class WitSpeechAi extends Service implements TtsProgressListener {
     }
 
     public void speak(String message, boolean recognize_after) {
-
-        //
-        //
-        // StartRecognition();
-        /*if (recognize_after) {
-          StartRecognition();
+        if (recognize_after) {
+            StartRecognition();
         }
         else
-            StopSrecognition();*/
-
+            Stoprecognition();
         StartMessage(message);
     }
 

@@ -246,6 +246,7 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
         });
     }
 
+    //start actual action
     private void startRecord(boolean b) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean btn = sharedPref.getBoolean(getResources().getString(R.string.switch_continuous), false);
@@ -255,14 +256,13 @@ public class MainActivity extends PermissionActivity implements NavigationView.O
             if (speechService.isFinishedTts()) {
 
                 if (b) {
-
                     paused = true;
                     speechService.speak(getResources().getString(R.string.StartMessage), true);
                     //showProgressBar();
                 } else {
 
                     //clearProgressBar();
-                    speechService.StopSrecognition();
+                    speechService.Stoprecognition();
                     response.setText("");
 
                 }
