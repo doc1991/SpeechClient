@@ -32,7 +32,7 @@ public class Maestro extends Service {
 
     public static final String TAG = "Maestro";
     private int RETRY_FLAG = 0;
-    private int RETRY_LIMIT = 5;
+    private final int RETRY_LIMIT = 5;
     private Action app;
     private Witobj resp;
 
