@@ -45,7 +45,7 @@ public class WitSpeechAi extends Service implements TtsProgressListener {
     private static final int BUFFER_SIZE = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL, AUDIO_FORMAT) * 10;
     private static final AtomicBoolean recordingInProgress = new AtomicBoolean(false);
     /* Go to your Wit.ai app Management > Settings and obtain the Client Access Token */
-    private static final String CLIENT_ACCESS_TOKEN = "6QDRV7CUMG5GKV3FUMUVS4NLADANOMVN";
+    private static final String CLIENT_ACCESS_TOKEN = "37IWYRMD7L6APY7AC5ZNVFXZYZYHSMYC";
     private final String TAG = this.getClass().getSimpleName();
     //broadcast for actions on clicking notification
     private final BroadcastReceiver NotAction = new BroadcastReceiver() {
@@ -64,7 +64,6 @@ public class WitSpeechAi extends Service implements TtsProgressListener {
     protected SpeechRegognition recognition;
     private Handler startHandler;
     private Handler closeHandler;
-    private boolean isFirst;
     private SpeecHelper talkengine;
     private OkHttpClient httpClient;
     private HttpUrl.Builder httpBuilder;
@@ -207,10 +206,10 @@ public class WitSpeechAi extends Service implements TtsProgressListener {
         startService(new Intent(this, Maestro.class));
         httpClient = new OkHttpClient();
         httpBuilder = HttpUrl.parse("https://api.wit.ai/speech").newBuilder();
-        httpBuilder.addQueryParameter("v", "20200916?q=");
+        httpBuilder.addQueryParameter("v", "20200916");
         httpRequestBuilder = new Request.Builder()
                 .url(httpBuilder.build())
-                .header("Authorization", "Bearer 6QDRV7CUMG5GKV3FUMUVS4NLADANOMVN")
+                .header("Authorization", "Bearer CKZRXPXVE2D2XYFU34PYPQS6PLAFRR5R")
                 .header("Content-Type", "audio/raw")
                 .header("Transfer-Encoding", "chunked");
 
@@ -227,7 +226,6 @@ public class WitSpeechAi extends Service implements TtsProgressListener {
         startHandler.post(new Runnable() {
             @Override
             public void run() {
-                Log.i(TAG, "recognition started first: " + isFirst);
                 StartRecognition();
 
             }
@@ -239,11 +237,6 @@ public class WitSpeechAi extends Service implements TtsProgressListener {
     }
 
     public void speak(String message, boolean recognize_after) {
-        if (recognize_after) {
-            StartRecognition();
-        }
-        else
-            Stoprecognition();
         StartMessage(message);
     }
 
@@ -278,6 +271,8 @@ public class WitSpeechAi extends Service implements TtsProgressListener {
             Request request = httpRequestBuilder.post(requestBody).build();
 
             try (Response response = httpClient.newCall(request).execute()) {
+                Log.d("Response",response.body().string());
+                Log.d("Response",response.toString());
 
                 if (response.isSuccessful()) {
 
